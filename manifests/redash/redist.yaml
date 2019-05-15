@@ -1,0 +1,39 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: redash-redis
+spec:
+  replicas: 1
+  strategy: {}
+  selector:
+    matchLabels:
+      service: redash-redis
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        service: redash-redis
+    spec:
+      containers:
+      - image: redis:3-alpine
+        name: redash-redis
+        ports:
+        - containerPort: 6379
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    service: redash-redis
+  name: redash-redis
+spec:
+  ports:
+  - name: "redash"
+    port: 6379
+    targetPort: 6379
+  selector:
+    service: redash-redis

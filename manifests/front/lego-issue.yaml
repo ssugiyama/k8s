@@ -1,0 +1,38 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: lego-issue
+spec:
+  completions: 1
+  parallelism: 1
+  backoffLimit: 1
+  template:
+    spec:
+      containers:
+      - name: lego-issue
+        image: xenolf/lego
+        args:
+        - --accept-tos
+        - --path=/lego
+        - --email=shin.sugi@gmail.com
+        - --domains=asharpminor.com
+        - --domains=*.asharpminor.com
+        - --dns=gcloud
+        - run
+        env:
+        - name: GCE_SERVICE_ACCOUNT_FILE
+          value: /var/secrets/asharpminor-63e8ef7fa8de.json
+        volumeMounts:
+        - mountPath: /lego
+          name: lego
+        - mountPath: /var/secrets
+          name: secrets
+      restartPolicy: Never
+      volumes:
+      - name: lego
+        hostPath: 
+          path: /var/k8s/volumes/lego
+          type: DirectoryOrCreate
+      - name: secrets
+          secret:
+            secretName: gce-service-account

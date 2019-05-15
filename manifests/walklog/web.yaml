@@ -1,0 +1,51 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: walklog-web
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      service: walklog-web
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        service: walklog-web
+        version: v1.1
+    spec:
+      containers:
+        - name: walklog-web
+          image: chezsugi/walklog_web 
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - mountPath: /var/www/public
+              name: walklog-public
+          envFrom:
+            - secretRef:
+                name: walklog-env
+      restart: Always
+      volumes:
+        - name: walklog-public
+          hostPath:
+            path: /var/k8s/volumes/walklog-public
+            type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    service: walklog-web
+  name: walklog-web
+spec:
+  ports:
+  - name: "walklog"
+    port: 3000
+    targetPort: 3000
+  selector:
+    service: walklog-web

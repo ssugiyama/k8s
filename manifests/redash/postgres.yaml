@@ -1,0 +1,56 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: redash-postgres
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      service: redash-postgres
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        service: redash-postgres
+    spec:
+      containers:
+      - args:
+        - postgres
+        - -c
+        - fsync=off
+        - -c
+        - full_page_writes=off
+        - -c
+        - synchronous_commit=OFF
+        image: postgres:9.5-alpine
+        name: redash-postgres
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: redash-postgres-data
+      restartPolicy: Always
+      volumes:
+      - name: redash-postgres-data
+        hostPath: 
+          path: /var/k8s/volumes/redash-data
+          type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    service: redash-postgres
+  name: redash-postgres
+spec:
+  ports:
+  - name: "postgres"
+    port: 5432
+    targetPort: 5432
+  selector:
+    service: redash-postgres

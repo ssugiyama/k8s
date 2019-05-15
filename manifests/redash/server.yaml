@@ -1,0 +1,59 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: redash-server
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      service: redash-server
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        service: redash-server
+    spec:
+      containers:
+      - args:
+        - server
+        env:
+        - name: PYTHONUNBUFFERED
+          value: "0"
+        - name: REDASH_DATABASE_URL
+          value: postgresql://postgres@redash-postgres/postgres
+        - name: REDASH_LOG_LEVEL
+          value: INFO
+        - name: REDASH_RATELIMIT_ENABLED
+          value: "false"
+        - name: REDASH_REDIS_URL
+          value: redis://redash-redis:6379/0
+        - name: REDASH_WEB_WORKERS
+          value: "2"
+        image: redash/redash
+        name: server
+        ports:
+        - containerPort: 5000
+        - containerPort: 5678
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    service: redash-server
+  name: redash-server
+spec:
+  ports:
+  - name: "5000"
+    port: 5000
+    targetPort: 5000
+  - name: "5678"
+    port: 5678
+    targetPort: 5678
+  selector:
+    service: redash-server

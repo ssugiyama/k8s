@@ -1,0 +1,49 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: walklog-db
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      service: walklog-db
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        service: walklog-db
+    spec:
+      containers:
+        - name: walklog-db
+          image: chezsugi/walklog_db
+          ports:
+            - containerPort: 5432 
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: walklog-data
+      restart: Always
+      volumes:
+        - name: walklog-data
+          hostPath:
+            path: /var/k8s/volumes/walklog-data
+            type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    service: walklog-db
+  name: walklog-db
+spec:
+  ports:
+  - name: "postgres"
+    port: 5432
+    targetPort: 5432
+  selector:
+    service: walklog-db
+
+

@@ -1,0 +1,84 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: nginx
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      service: nginx
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        service: nginx
+        version: v2.1
+    spec:
+      containers:
+      - image: nginx:alpine
+        name: nginx
+        ports:
+        - containerPort: 80
+        - containerPort: 443
+        resources: {}
+        volumeMounts:
+        - mountPath: /etc/nginx/
+          name: nginx-conf
+        - mountPath: /etc/nginx/conf.d
+          name: nginx-conf-d
+        - mountPath: /usr/share/nginx/walk.asharpminor.com
+          name: walklog-public
+        - mountPath: /usr/share/nginx/asharpminor.com
+          name: blog-public
+        - mountPath: /etc/nginx/ssl
+          name: certificates
+        - mountPath: /var/log/nginx
+          name: nginx-log
+      restartPolicy: Always
+      volumes:
+      - name: nginx-conf
+        configMap:
+          name: nginx-conf
+      - name: nginx-conf-d
+        configMap:
+          name: nginx-conf-d
+      - name: walklog-public
+        hostPath: 
+          path: /var/k8s/volumes/walklog-public
+          type: DirectoryorCreate
+      - name: blog-public
+        hostPath: 
+          path: /var/k8s/volumes/blog-public
+          type: DirectoryOrCreate
+      - name: certificates
+        hostPath:
+          path: /var/k8s/volumes/lego/certificates
+          type: DirectoryOrCreate
+      - name: nginx-log
+        hostPath: 
+          path: /var/k8s/volumes/nginx-log
+          type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    service: nginx
+    dummy: dummy
+  name: nginx
+spec:
+  type: LoadBalancer
+  ports:
+  - name: "http"
+    port: 80
+    targetPort: 80
+  - name: "https"
+    port: 443
+    targetPort: 443
+  selector:
+    service: nginx

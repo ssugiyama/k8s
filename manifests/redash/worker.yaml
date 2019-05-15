@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: redash-worker
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      service: redash-worker
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        service: redash-worker
+    spec:
+      containers:
+      - args:
+        - scheduler
+        env:
+        - name: PYTHONUNBUFFERED
+          value: "0"
+        - name: QUEUES
+          value: queries,scheduled_queries,celery,schemas
+        - name: REDASH_DATABASE_URL
+          value: postgresql://postgres@redash-postgres/postgres
+        - name: REDASH_LOG_LEVEL
+          value: INFO
+        - name: REDASH_REDIS_URL
+          value: redis://redash-redis:6379/0
+        - name: WORKERS_COUNT
+          value: "2"
+        image: redash/redash
+        name: redash-worker
+      restartPolicy: Always

@@ -1,0 +1,30 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: walklog-backup-db
+spec:
+  schedule: "0 2 * * 2"
+  jobTemplate:
+    spec:
+      completions: 1
+      parallelism: 1
+      backoffLimit: 1
+      template:
+        spec:
+          containers:
+          - name: walklog-backup-db
+            image: mdillon/postgis:11-alpine
+            command: 
+            - sh
+            args:
+            -  -c
+            - 'pg_dump -h walklog-db -U postgres postgres -t walks -t users > /var/backups/$(date +\%Y\%m\%d).sqｌ'
+            volumeMounts:
+            - mountPath: /var/backups/
+              name: backups
+          restartPolicy: Never
+          volumes:
+          - name: backups
+            hostPath:
+              path: /var/k8s/volumes/walklog-backups
+              type: DirectoryOrCreate
