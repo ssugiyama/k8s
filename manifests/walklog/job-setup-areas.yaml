@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: walklog-setup-areas
+spec:
+  completions: 1
+  parallelism: 1
+  backoffLimit: 1
+  template:
+    spec:
+      containers:
+      - name: walklog-setup-areas
+        image: chezsugi/walklog_db 
+        command:
+        - manage-areas.sh
+        args:
+        - -h
+        - walklog-db
+        - japan_ver81
+        volumeMounts:
+        - mountPath: /tmp
+          name: walklog-tmp
+      restartPolicy: OnFailure
+      volumes:
+      - name: walklog-tmp
+        hostPath:
+          path: /var/k8s/volumes/walklog-tmp
+          type: DirectoryOrCreate
