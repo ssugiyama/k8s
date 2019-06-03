@@ -16,7 +16,7 @@ spec:
       creationTimestamp: null
       labels:
         service: nginx
-        version: v2.1
+        version: $NGINX_VER
     spec:
       containers:
       - image: nginx:alpine

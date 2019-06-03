@@ -15,7 +15,7 @@ spec:
       creationTimestamp: null
       labels:
         service: walklog-db
-        version: v1.1
+        version: $WALKLOG_DB_VER
     spec:
       containers:
         - name: walklog-db

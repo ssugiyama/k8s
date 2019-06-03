@@ -15,11 +15,16 @@ spec:
       creationTimestamp: null
       labels:
         service: walklog-web
-        version: v1.1
+        version: $WALKLOG_WEB_VER
     spec:
       containers:
         - name: walklog-web
-          image: chezsugi/walklog_web 
+          image: chezsugi/walklog_web
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                - /var/www/setup.sh
           ports:
             - containerPort: 3000
           volumeMounts:
