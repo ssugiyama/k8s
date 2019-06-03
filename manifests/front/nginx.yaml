@@ -49,7 +49,7 @@ spec:
       - name: walklog-public
         hostPath: 
           path: /var/k8s/volumes/walklog-public
-          type: DirectoryorCreate
+          type: DirectoryOrCreate
       - name: blog-public
         hostPath: 
           path: /var/k8s/volumes/blog-public
