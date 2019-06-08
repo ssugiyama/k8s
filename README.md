@@ -23,9 +23,9 @@ cd manifests
 ## walklog 
 
 ```
-WALKLOG_DB_VER=$(date +%Y%m%d%H%M) | envsubst < walklog/db.yaml | k apply -f -
+WALKLOG_DB_VER="v$(date +%Y%m%d%H%M)" envsubst < walklog/db.yaml | k apply -f -
 k apply -f walklog/job-setup-areas.yaml
-WALKLOG_WEB_VER=$(date +%Y%m%d%H%M) | envsubst < walklog/web.yaml | k apply -f -
+WALKLOG_WEB_VER="v$(date +%Y%m%d%H%M)" envsubst < walklog/web.yaml | k apply -f -
 ```
 
 backup db periodically
@@ -59,5 +59,5 @@ k apply -f front/cronjob-lego-renew.yaml
 ### nginx
 
 ```
-NGINX_VER=$(date +%Y%m%d%H%M) | envsubst < front/nginx.yaml | k apply -f -
+NGINX_VER="v$(date +%Y%m%d%H%M)" envsubst < front/nginx.yaml | k apply -f -
 ```
