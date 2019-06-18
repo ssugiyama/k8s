@@ -30,6 +30,8 @@ spec:
           volumeMounts:
             - mountPath: /var/www/public
               name: walklog-public
+            - mountPath: /var/www/sessions
+              name: walklog-sessions
           envFrom:
             - secretRef:
                 name: walklog-env
@@ -38,6 +40,10 @@ spec:
         - name: walklog-public
           hostPath:
             path: /var/k8s/volumes/walklog-public
+            type: DirectoryOrCreate
+        - name: walklog-sessions
+          hostPath:
+            path: /var/k8s/volumes/walklog-sessions
             type: DirectoryOrCreate
 ---
 apiVersion: v1
