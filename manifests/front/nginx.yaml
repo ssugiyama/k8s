@@ -27,14 +27,19 @@ spec:
         resources: {}
         volumeMounts:
         - mountPath: /etc/nginx/
+          readOnly: true
           name: nginx-conf
         - mountPath: /etc/nginx/conf.d
+          readOnly: true
           name: nginx-conf-d
         - mountPath: /usr/share/nginx/walk.asharpminor.com
+          readOnly: true
           name: walklog-public
         - mountPath: /usr/share/nginx/asharpminor.com
+          readOnly: true
           name: blog-public
         - mountPath: /etc/nginx/ssl
+          readOnly: true
           name: certificates
         - mountPath: /var/log/nginx
           name: nginx-log
@@ -47,11 +52,11 @@ spec:
         configMap:
           name: nginx-conf-d
       - name: walklog-public
-        hostPath: 
+        hostPath:
           path: /var/k8s/volumes/walklog-public
           type: DirectoryOrCreate
       - name: blog-public
-        hostPath: 
+        hostPath:
           path: /var/k8s/volumes/blog-public
           type: DirectoryOrCreate
       - name: certificates
@@ -59,7 +64,7 @@ spec:
           path: /var/k8s/volumes/lego/certificates
           type: DirectoryOrCreate
       - name: nginx-log
-        hostPath: 
+        hostPath:
           path: /var/k8s/volumes/nginx-log
           type: DirectoryOrCreate
 ---

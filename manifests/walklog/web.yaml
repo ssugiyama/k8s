@@ -30,8 +30,9 @@ spec:
           volumeMounts:
             - mountPath: /var/www/public
               name: walklog-public
-            - mountPath: /var/www/sessions
-              name: walklog-sessions
+            - mountPath: /var/www/firebase
+              readOnly: true
+              name: walklog-firebase
           envFrom:
             - secretRef:
                 name: walklog-env
@@ -41,10 +42,9 @@ spec:
           hostPath:
             path: /var/k8s/volumes/walklog-public
             type: DirectoryOrCreate
-        - name: walklog-sessions
-          hostPath:
-            path: /var/k8s/volumes/walklog-sessions
-            type: DirectoryOrCreate
+        - name: walklog-firebase
+          secret:
+            secretName: walklog-firebase
 ---
 apiVersion: v1
 kind: Service

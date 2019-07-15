@@ -14,11 +14,11 @@ spec:
           containers:
           - name: walklog-backup-db
             image: mdillon/postgis:11-alpine
-            command: 
+            command:
             - sh
             args:
             -  -c
-            - 'pg_dump -h walklog-db -U postgres postgres -t walks -t users > /var/backups/$(date +\%Y\%m\%d).sqｌ'
+            - 'pg_dump -h walklog-db -U postgres postgres -t walks > /var/backups/$(date +\%Y\%m\%d).sqｌ'
             volumeMounts:
             - mountPath: /var/backups/
               name: backups
